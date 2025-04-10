@@ -88,3 +88,5 @@ plt.show()
 sns.pairplot(df[numeric_cols])
 plt.suptitle("Pairplot of Numerical Columns", y=1.02)
 plt.show()
+
+print("hello world")

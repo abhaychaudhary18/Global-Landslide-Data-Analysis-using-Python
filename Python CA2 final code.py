@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy impoert stats
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv("C:\\Users\\Lenovo\\OneDrive\\Desktop\\python ca 2\\Global_Landslide_Catalog_Export.csv")
@@ -92,4 +93,15 @@ sns.pairplot(df[numeric_cols])
 plt.suptitle("Pairplot of Numerical Columns", y=1.02)
 plt.show()
 
-print("hello world")
+# Prepare data for tests
+df['trigger_type'] = df['landslide_trigger'].apply(lambda x: 'Rainfall' if 'rain' in str(x).lower() else 'Other')
+rain_fatalities = df[df['trigger_type'] == 'Rainfall']['fatality_count']
+other_fatalities = df[df['trigger_type'] == 'Other']['fatality_count']
+
+rain_injuries = df[df['trigger_type'] == 'Rainfall']['injury_count']
+other_injuries = df[df['trigger_type'] == 'Other']['injury_count']
+
+# Z-Test: Fatalities (assuming large sample and known population std deviation approx. by sample std)
+z_stat, z_p = stats.ttest_ind(rain_fatalities, other_fatalities, equal_var=True)
+print(f"\nZ-Test for Fatality Count (Rainfall vs Other):")
+print(f"Z-statistic: {z_stat:.3f}, P-value: {z_p:.3f}")

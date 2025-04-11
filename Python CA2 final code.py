@@ -1,9 +1,11 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv("C:\\Users\\Lenovo\\OneDrive\\Desktop\\python ca 2\\Global_Landslide_Catalog_Export.csv")
+
 print(df.shape)
 print(df.head())
 print(df.columns)
@@ -11,6 +13,7 @@ print("Null:- ", df.isnull().sum())
 
 # Select numeric columns to analyze
 numeric_cols = ['fatality_count', 'injury_count', 'admin_division_population', 'gazeteer_distance']
+df['source_name']=df['source_name'].replace(['', None, np.nan], 'No Name')
 
 # Fill missing values
 df[numeric_cols] = df[numeric_cols].fillna(0)

@@ -51,7 +51,7 @@ Clone the repository:
 
 bash
 Copy code
-git clone https://github.com/your-username/landslide-data-analysis.git
+git clone https://github.com/abhaychaudhary18
 Install required libraries:
 
 bash

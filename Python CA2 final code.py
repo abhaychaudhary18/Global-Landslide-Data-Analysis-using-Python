@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy impoert stats
+from scipy import stats
 
 # Read the CSV file into a DataFrame
 df = pd.read_csv("C:\\Users\\Lenovo\\OneDrive\\Desktop\\python ca 2\\Global_Landslide_Catalog_Export.csv")
@@ -41,6 +41,19 @@ for col in numeric_cols:
 # Print outlier info
 for col, stats in outlier_info.items():
     print(f"{col}:\n  Outliers: {stats['num_outliers']}\n  Lower Bound: {stats['lower_bound']:.2f}\n  Upper Bound: {stats['upper_bound']:.2f}\n")
+
+# Prepare data for tests
+df['trigger_type'] = df['landslide_trigger'].apply(lambda x: 'Rainfall' if 'rain' in str(x).lower() else 'Other')
+rain_fatalities = df[df['trigger_type'] == 'Rainfall']['fatality_count']
+other_fatalities = df[df['trigger_type'] == 'Other']['fatality_count']
+
+rain_injuries = df[df['trigger_type'] == 'Rainfall']['injury_count']
+other_injuries = df[df['trigger_type'] == 'Other']['injury_count']
+
+# Z-Test: Fatalities (assuming large sample and known population std deviation approx. by sample std)
+z_stat, z_p = stats.ttest_ind(rain_fatalities, other_fatalities, equal_var=True)
+print(f"\nZ-Test for Fatality Count (Rainfall vs Other):")
+print(f"Z-statistic: {z_stat:.3f}, P-value: {z_p:.3f}")
 
 # 1. Top 10 Countries
 plt.figure(figsize=(10, 6))
@@ -93,15 +106,20 @@ sns.pairplot(df[numeric_cols])
 plt.suptitle("Pairplot of Numerical Columns", y=1.02)
 plt.show()
 
-# Prepare data for tests
-df['trigger_type'] = df['landslide_trigger'].apply(lambda x: 'Rainfall' if 'rain' in str(x).lower() else 'Other')
-rain_fatalities = df[df['trigger_type'] == 'Rainfall']['fatality_count']
-other_fatalities = df[df['trigger_type'] == 'Other']['fatality_count']
+# 7. Box Plots for Each Numeric Column
+plt.figure(figsize=(12, 8))
+for i, col in enumerate(numeric_cols, 1):
+    plt.subplot(2, 2, i)
+    sns.boxplot(y=df[col], color='lightblue')
+    plt.title(f'Boxplot of {col}')
+    plt.tight_layout()
+plt.show()
 
-rain_injuries = df[df['trigger_type'] == 'Rainfall']['injury_count']
-other_injuries = df[df['trigger_type'] == 'Other']['injury_count']
+# 8. Missing Value Heatmap (before filling if you want visual insight)
+plt.figure(figsize=(10, 5))
+sns.heatmap(df.isnull(), cbar=False, cmap='viridis', yticklabels=False)
+plt.title("Missing Data Heatmap")
+plt.tight_layout()
+plt.show()
 
-# Z-Test: Fatalities (assuming large sample and known population std deviation approx. by sample std)
-z_stat, z_p = stats.ttest_ind(rain_fatalities, other_fatalities, equal_var=True)
-print(f"\nZ-Test for Fatality Count (Rainfall vs Other):")
-print(f"Z-statistic: {z_stat:.3f}, P-value: {z_p:.3f}")
+
